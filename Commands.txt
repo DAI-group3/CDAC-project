@@ -1,0 +1,44 @@
+#To build and run .py file
+
+sudo docker build -t pr3_1 .
+sudo docker run --rm -it -p 8080:8080 pr3_1
+
+
+#To build and run html file
+
+sudo docker build -t pr3_2 .
+
+sudo docker run --name web_page -p 6930:80 -d pr3_2
+
+sudo docker run --name web_page -p 80:80 -d pr3_2
+
+  
+#AWS folder transfer command ,run in local machine
+chmod  400 "/path/pemfile"
+
+scp -i ai-project.pem -r ProjectDeployment ubuntu@35.154.180.14:/home/ubuntu  #(saving on desktop in EC2 instance)
+
+
+sudo apt update -y
+
+sudo apt install docker.io -y
+
+sudo systemctl start docker
+
+sudo systemctl status docker
+
+#sudo docker pull httpd
+ 
+#To remove untagged images at once
+sudo docker rmi $(docker images --filter "dangling=true" -q --no-trunc)
+
+#Shows child images of a parent image
+sudo docker images --filter since="parent_image" -q     
+
+#Removes cache 
+sudo apt-get autoclean   
+
+
+#sudo docker run --name phtml -p  6930:80 -v /home/dai/Desktop/ProjectDeployment/HTML_RUN_FILE/LingoScope:/usr/share/nginx/html nginx  (Local Machine)
+
+#sudo docker run --name phtml2 -p  6930:80 -v /home/ubuntu/ProjectDeployment/HTML_RUN_FILE/LingoScope:/usr/share/nginx/html nginx

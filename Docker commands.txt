@@ -1,0 +1,109 @@
+Docker commands:
+-------------------------------------------------------------
+### Install docker
+sudo apt install docker.io
+
+-------------------------------------------------------------
+### direct docker commands
+sudo systemctl start docker
+sudo systemctl status docker
+sudo systemctl stop docker
+sudo systemctl enable docker
+sudo docker ps
+sudo docker ps -a
+sudo docker images
+sudo docker pull {oficial image}
+
+-------------------------------------------------------------
+### container
+sudo docker run {image}                              # unnamed container
+sudo docker run -ti {image}                          # launch interactive terminal of cont
+sudo docker run --rm -ti {image_name}                # delete container when stopped
+sudo docker run --name {container_name} -ti {image}  # named container
+sudo docker run --name {container_name} {image} cat/etc/hostname {i.e. a shell/bash command} # 
+sudo docker run --name {container_name} {image} cat/etc/os-release
+sudo docker rm {container id/name}                  # delete container
+sudo docker inspect {container}                     # get details about container    
+sudo docker stop {container}                        # stop container
+sudo docker run {container}                         # run container 
+sudo docker logs {container_name}                   # all activity on container
+sudo docker exec {container_name} {command}         # run cmd command inside a running container
+sudo docker exec {container_name} pwd               # to get to know whwere files are getting saved in running container
+
+-------------------------------------------------------------
+### image
+sudo docker commit {container_name} {new_image_name}        # create image from container
+sudo docker build -t {new_image_name} {path to directory}   # create new image using Dockerfile
+sudo docker rmi {image_name}                                # delete image
+sudo docker save {image} > {path_where_to_save.tar}         # save image in a tar file
+sudo docker load < {path_to_image}                          # load image from tar file
+
+-------------------------------------------------------------
+### web rendering
+sudo docker run --{container_name} httpd
+sudo docker run --{container_name} -p {main_port}:{cont_port} -d {image_name}                               # port mapping
+sudo docker cp index.html {container_name}:/usr/local/apache2/htdocs/                                       # and copy index.html from main pc to container
+-------------------------------------------------------------
+# volume Map
+sudo docker run --{container_name} -p {main_port}:{cont_port} -v {main_path}:{cont_path} -d {image_name}    # volume mapping
+
+-------------------------------------------------------------
+### Docker Hub
+sudo docker logout
+sudo docker login  # login into dockerhub account [enter account credentials]
+sudo docker push {image_name}:{version}  # push an image to docker hub [Repo name and image name should be matching]
+
+-------------------------------------------------------------
+### network
+sudo docker network create {new_network_name}
+sudo docker network ls
+sudo docker network disconnect bridge {container}
+sudo docker network connect {network} {container}
+
+-------------------------------------------------------------
+### database connectivity
+sudo docker run --name {container} -e MYSQL_ROOT_PASSWORD=password -d mysql # creating a container over mysql image
+# now change it's network, creating new network (say sqltest2)
+sudo docker build -t db-test .  # build an image using test.py and dockerfile
+# Remember to keep host as container anme in py file.
+sudo docker run --rm --network {network(sqltest2)} {image_name(db-test)}
+
+-------------------------------------------------------------
+###Jupyter, Tensorflow on Docker
+sudo docker run --name {new_container_name} -e JUPYTER_ENABLE_LAB=yes -e JUPYTER_TOKEN=test@123 -p {main_port}:{cont_port} -d jupyter/tensorflow-notebook{i.e. image_name}
+
+-------------------------------------------------------------
+###Docker-compose
+{NOTE: You should be in directory where the docker-compose.yaml is placed}
+sudo docker-compose up -d #run docker compose
+sudo docker-compose stop  #stop docker compose
+
+-------------------------------------------------------------
+###Dockerfile:
+FROM python3
+RUN apt update -y
+RUN apt install python3-pip -y
+RUN pip install mysql-connector-python
+RUN mkdir /app1/
+COPY test.py /app1/
+CMD [ "python3","/app1/test.py" ]
+
+-------------------------------------------------------------
+###Docker-compose.yaml
+version: '3'
+services:
+  dbsrv:
+    image: dai.lab/mysql
+    environment:
+      - MYSQL_ROOT_PASSWRD:"password"    
+
+  web1:
+    image: dai.lab/httpd
+    ports:
+      - 7600:80
+  nginx:
+    image: dai.lab/nginx
+    ports:
+      - 9000:80
+    expose:
+      - 8100
